@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reel Editor Toolkit for Unity by Aman Almadi</title>
+  <meta name="description" content="Set up slot-game reels, symbols, payouts and paylines visually in the Unity Editor. Spin, win evaluation and a ready-to-run demo scene are included.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Reel Editor Toolkit for Unity">
+  <meta property="og:description" content="Set up slot reels, paylines and wins visually. A Unity Editor tool for 2D slot games, coming to the Unity Asset Store.">
+  <meta property="og:url" content="https://aman-almadi.github.io/">
+  <meta property="og:image" content="https://aman-almadi.github.io/assets/img/social.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
+  <link rel="preload" href="assets/fonts/archivo-wdth-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>document.documentElement.className += " js";</script>
+</head>
+<body>
+  <!-- The gold tint of a winning symbol: the colour (1, 0.85, 0.2) the toolkit's PaylineManager multiplies onto it. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="gold" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="1 0 0 0 0  0 .85 0 0 0  0 0 .2 0 0  0 0 0 1 0"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="brand" href="index.html">Aman Almadi</a>
+      <nav class="nav" aria-label="Main">
+        <a href="index.html" aria-current="page">Home</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="title"><span>Reel</span> <span>Editor</span> <span>Toolkit</span></h1>
+          <p class="tagline">Set up slot reels, paylines and wins visually.</p>
+          <p class="status">A Unity Editor tool for 2D slot games, coming to the Unity Asset Store. Have a question before then? <a href="contact.html">Write to me</a>.</p>
+        </div>
+
+        <div class="demo">
+          <div class="machine" id="machine" aria-hidden="true">
+            <img src="assets/img/reel-panel.webp" alt="" width="1100" height="700">
+            <div class="reels">
+          <div class="reel"><div class="strip"><div class="cell" data-sym="Cherry"><img src="assets/img/symbols/Cherry.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Bar"><img src="assets/img/symbols/Bar.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Plum"><img src="assets/img/symbols/Plum.webp" alt="" width="256" height="256"></div></div></div>
+          <div class="reel"><div class="strip"><div class="cell" data-sym="Plum"><img src="assets/img/symbols/Plum.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Bell"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Cherry"><img src="assets/img/symbols/Cherry.webp" alt="" width="256" height="256"></div></div></div>
+          <div class="reel"><div class="strip"><div class="cell" data-sym="Bar"><img src="assets/img/symbols/Bar.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Cherry"><img src="assets/img/symbols/Cherry.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Bell"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div></div></div>
+          <div class="reel"><div class="strip"><div class="cell" data-sym="Bell"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Seven"><img src="assets/img/symbols/Seven.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Plum"><img src="assets/img/symbols/Plum.webp" alt="" width="256" height="256"></div></div></div>
+          <div class="reel"><div class="strip"><div class="cell" data-sym="Plum"><img src="assets/img/symbols/Plum.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Bar"><img src="assets/img/symbols/Bar.webp" alt="" width="256" height="256"></div><div class="cell" data-sym="Cherry"><img src="assets/img/symbols/Cherry.webp" alt="" width="256" height="256"></div></div></div>
+            </div>
+          </div>
+          <div class="controls">
+            <button class="spin" id="spin" type="button">Spin</button>
+            <div class="readout" id="readout" aria-live="polite" aria-atomic="true">
+              <p class="win-line" id="win-line" hidden></p>
+              <ul class="win-lines" id="win-lines"></ul>
+              <p class="what" id="what">The demo&rsquo;s starting screen. Nothing pays.</p>
+            </div>
+          </div>
+          <p class="note">A replay in your browser of the demo scene that comes with the package: the same art and the same eight planned results. In Unity you press Play and click Spin.</p>
+        </div>
+      </div>
+    </section>
+    <div class="bulbs" aria-hidden="true"></div>
+
+    <section class="band band--paper" id="how">
+      <div class="wrap">
+        <h2 class="h2">How it works</h2>
+        <p class="intro">Everything is set up in the Unity Editor. Your own script decides the results, the balance and the game features. The toolkit scrolls the reels, lands them on the result, works out the wins and shows them.</p>
+
+        <ol class="steps">
+          <li>
+            <div class="fig"><svg class="payline fig-line" viewBox="0 0 99.0 58.0" aria-hidden="true"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/></svg></div>
+            <h3>Lay out the reels</h3>
+            <p>Open the Reel Editor window and set the number of reels and rows, the symbol size and the gaps. A preview shows in the Scene view, and one click generates the reels and a Spin button.</p>
+          </li>
+          <li>
+            <div class="fig fig-tiles">
+              <img src="assets/img/symbols/Cherry.webp" alt="" width="256" height="256">
+              <img src="assets/img/symbols/Plum.webp" alt="" width="256" height="256">
+              <img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256">
+              <img src="assets/img/symbols/Bar.webp" alt="" width="256" height="256">
+              <img src="assets/img/symbols/Seven.webp" alt="" width="256" height="256">
+            </div>
+            <h3>Name the symbols and set what they pay</h3>
+            <p>Give each symbol a name and a sprite. Payout rows say exactly, between, or more, or less. Use one shared payout list or a list per symbol.</p>
+          </li>
+          <li>
+            <div class="fig"><svg class="payline fig-line" viewBox="0 0 99.0 58.0" role="img" aria-label="Line 4 (V): rows 1, 2, 3, 2, 1"><rect class="t on" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,8.5 29.0,29.0 49.5,49.5 70.0,29.0 90.5,8.5"/><circle class="dot" cx="8.5" cy="8.5" r="3.4"/><circle class="dot" cx="29.0" cy="29.0" r="3.4"/><circle class="dot" cx="49.5" cy="49.5" r="3.4"/><circle class="dot" cx="70.0" cy="29.0" r="3.4"/><circle class="dot" cx="90.5" cy="8.5" r="3.4"/></svg></div>
+            <h3>Draw the paylines</h3>
+            <p>Draw fixed paylines on a grid, or switch to Anywhere Pays. Wins count from the left, and optionally from the right as well. A Wild stands in for the other symbols. Scatter and Bonus symbols call your own functions when enough of them land.</p>
+          </li>
+          <li>
+            <div class="fig fig-win">
+              <div class="cell win"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div>
+              <div class="cell win"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div>
+              <div class="cell win"><img src="assets/img/symbols/Bell.webp" alt="" width="256" height="256"></div>
+            </div>
+            <h3>Press Spin</h3>
+            <p>The reels accelerate, scroll and land on the result, with an optional bounce. Winning symbols light up, a win readout appears, and the Console explains line by line why a line paid or did not.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="band band--dark" id="paylines">
+      <div class="wrap">
+        <h2 class="h2">Ten paylines in the demo</h2>
+        <p class="intro">The demo scene draws ten classic lines over five reels and three rows. In your own game you draw yours on a grid.</p>
+        <ul class="paylines">
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 1 (middle): rows 2, 2, 2, 2, 2"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,29.0 29.0,29.0 49.5,29.0 70.0,29.0 90.5,29.0"/><circle class="dot" cx="8.5" cy="29.0" r="3.4"/><circle class="dot" cx="29.0" cy="29.0" r="3.4"/><circle class="dot" cx="49.5" cy="29.0" r="3.4"/><circle class="dot" cx="70.0" cy="29.0" r="3.4"/><circle class="dot" cx="90.5" cy="29.0" r="3.4"/></svg><span class="cap">Line 1 (middle)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 2 (top): rows 1, 1, 1, 1, 1"><rect class="t on" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,8.5 29.0,8.5 49.5,8.5 70.0,8.5 90.5,8.5"/><circle class="dot" cx="8.5" cy="8.5" r="3.4"/><circle class="dot" cx="29.0" cy="8.5" r="3.4"/><circle class="dot" cx="49.5" cy="8.5" r="3.4"/><circle class="dot" cx="70.0" cy="8.5" r="3.4"/><circle class="dot" cx="90.5" cy="8.5" r="3.4"/></svg><span class="cap">Line 2 (top)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 3 (bottom): rows 3, 3, 3, 3, 3"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,49.5 29.0,49.5 49.5,49.5 70.0,49.5 90.5,49.5"/><circle class="dot" cx="8.5" cy="49.5" r="3.4"/><circle class="dot" cx="29.0" cy="49.5" r="3.4"/><circle class="dot" cx="49.5" cy="49.5" r="3.4"/><circle class="dot" cx="70.0" cy="49.5" r="3.4"/><circle class="dot" cx="90.5" cy="49.5" r="3.4"/></svg><span class="cap">Line 3 (bottom)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 4 (V): rows 1, 2, 3, 2, 1"><rect class="t on" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,8.5 29.0,29.0 49.5,49.5 70.0,29.0 90.5,8.5"/><circle class="dot" cx="8.5" cy="8.5" r="3.4"/><circle class="dot" cx="29.0" cy="29.0" r="3.4"/><circle class="dot" cx="49.5" cy="49.5" r="3.4"/><circle class="dot" cx="70.0" cy="29.0" r="3.4"/><circle class="dot" cx="90.5" cy="8.5" r="3.4"/></svg><span class="cap">Line 4 (V)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 5 (upside-down V): rows 3, 2, 1, 2, 3"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,49.5 29.0,29.0 49.5,8.5 70.0,29.0 90.5,49.5"/><circle class="dot" cx="8.5" cy="49.5" r="3.4"/><circle class="dot" cx="29.0" cy="29.0" r="3.4"/><circle class="dot" cx="49.5" cy="8.5" r="3.4"/><circle class="dot" cx="70.0" cy="29.0" r="3.4"/><circle class="dot" cx="90.5" cy="49.5" r="3.4"/></svg><span class="cap">Line 5 (upside-down V)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 6 (steps down): rows 1, 1, 2, 3, 3"><rect class="t on" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,8.5 29.0,8.5 49.5,29.0 70.0,49.5 90.5,49.5"/><circle class="dot" cx="8.5" cy="8.5" r="3.4"/><circle class="dot" cx="29.0" cy="8.5" r="3.4"/><circle class="dot" cx="49.5" cy="29.0" r="3.4"/><circle class="dot" cx="70.0" cy="49.5" r="3.4"/><circle class="dot" cx="90.5" cy="49.5" r="3.4"/></svg><span class="cap">Line 6 (steps down)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 7 (steps up): rows 3, 3, 2, 1, 1"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,49.5 29.0,49.5 49.5,29.0 70.0,8.5 90.5,8.5"/><circle class="dot" cx="8.5" cy="49.5" r="3.4"/><circle class="dot" cx="29.0" cy="49.5" r="3.4"/><circle class="dot" cx="49.5" cy="29.0" r="3.4"/><circle class="dot" cx="70.0" cy="8.5" r="3.4"/><circle class="dot" cx="90.5" cy="8.5" r="3.4"/></svg><span class="cap">Line 7 (steps up)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 8 (valley): rows 2, 1, 1, 1, 2"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,29.0 29.0,8.5 49.5,8.5 70.0,8.5 90.5,29.0"/><circle class="dot" cx="8.5" cy="29.0" r="3.4"/><circle class="dot" cx="29.0" cy="8.5" r="3.4"/><circle class="dot" cx="49.5" cy="8.5" r="3.4"/><circle class="dot" cx="70.0" cy="8.5" r="3.4"/><circle class="dot" cx="90.5" cy="29.0" r="3.4"/></svg><span class="cap">Line 8 (valley)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 9 (hill): rows 2, 3, 3, 3, 2"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,29.0 29.0,49.5 49.5,49.5 70.0,49.5 90.5,29.0"/><circle class="dot" cx="8.5" cy="29.0" r="3.4"/><circle class="dot" cx="29.0" cy="49.5" r="3.4"/><circle class="dot" cx="49.5" cy="49.5" r="3.4"/><circle class="dot" cx="70.0" cy="49.5" r="3.4"/><circle class="dot" cx="90.5" cy="29.0" r="3.4"/></svg><span class="cap">Line 9 (hill)</span></li>
+      <li><svg class="payline " viewBox="0 0 99.0 58.0" role="img" aria-label="Line 10 (zig-zag): rows 2, 1, 2, 3, 2"><rect class="t" x="0.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="0.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="0.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="20.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="20.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="41.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="41.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="61.5" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="61.5" y="41.0" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="0.0" width="17.0" height="17.0" rx="3.2"/><rect class="t on" x="82.0" y="20.5" width="17.0" height="17.0" rx="3.2"/><rect class="t" x="82.0" y="41.0" width="17.0" height="17.0" rx="3.2"/><polyline class="ln" points="8.5,29.0 29.0,8.5 49.5,29.0 70.0,49.5 90.5,29.0"/><circle class="dot" cx="8.5" cy="29.0" r="3.4"/><circle class="dot" cx="29.0" cy="8.5" r="3.4"/><circle class="dot" cx="49.5" cy="29.0" r="3.4"/><circle class="dot" cx="70.0" cy="49.5" r="3.4"/><circle class="dot" cx="90.5" cy="29.0" r="3.4"/></svg><span class="cap">Line 10 (zig-zag)</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="band band--paper" id="package">
+      <div class="wrap split">
+        <div>
+          <h2 class="h2">What is in the package</h2>
+          <ul class="list">
+            <li><strong>Reel Editor window</strong> with a live preview and one-click reel generation.</li>
+            <li><strong>Symbol Library</strong> with flexible payout rows.</li>
+            <li><strong>Smooth spin</strong> with landing and bounce, and Inspector settings for speed and timing.</li>
+            <li><strong>Fixed paylines or Anywhere Pays</strong>, counted from the left and optionally from the right.</li>
+            <li><strong>Wild, Scatter and Bonus</strong>: a Wild stands in for the others, and Scatter and Bonus call your own functions.</li>
+            <li><strong>Win feedback</strong>: highlights, an on-screen readout and a line-by-line Console report.</li>
+            <li><strong>Hooks for your game logic</strong>: results from your own server or math engine, starting symbols, reel sets, and events for spin start and reel stop.</li>
+            <li><strong>Demo scene, documentation and source code</strong>, with its own namespace and assembly definitions.</li>
+          </ul>
+        </div>
+        <div class="yours">
+          <h2 class="h2">What stays yours</h2>
+          <p>Reel Editor Toolkit is the reel machinery of a slot game, not a complete game. It does not keep a balance, take bets, produce the math results or run bonus games. Those parts are yours, and the toolkit gives your script the events and the win list it needs.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band band--paper-2" id="requirements">
+      <div class="wrap">
+        <h2 class="h2">Requirements</h2>
+        <dl class="reqs">
+          <div><dt>Unity</dt><dd>2022.3 or newer.</dd></div>
+          <div><dt>Unity UI package</dt><dd>Draws the Spin button. New projects already include it (<code>com.unity.ugui</code>).</dd></div>
+          <div><dt>Input System package</dt><dd>Optional. Supported if your project uses it (<code>com.unity.inputsystem</code>).</dd></div>
+          <div><dt>Third-party components</dt><dd>None. The demo art was made for this package.</dd></div>
+        </dl>
+        <!-- After the three test setups: add the Unity versions and render pipelines the package was tested on. -->
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot">
+      <div>
+        <p class="foot-brand">Aman Almadi</p>
+        <p class="foot-line">Reel Editor Toolkit, coming to the Unity Asset Store.</p>
+      </div>
+      <nav class="foot-nav" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Contact</a>
+        <a href="mailto:amanalmadiofficial@gmail.com">amanalmadiofficial@gmail.com</a>
+      </nav>
+    </div>
+    <div class="wrap legal">
+      <p>&copy; 2026 Aman Almadi. Unity is a trademark of Unity Technologies. This site is not affiliated with or endorsed by Unity Technologies.</p>
+    </div>
+  </footer>
+
+  <script type="application/json" id="demo-data">{"base":"assets/img/symbols/","symbols":["Cherry","Plum","Bell","Bar","Seven","Wild","Scatter","Bonus"],"spins":[{"rows":[["Cherry","Plum","Bar","Cherry","Seven"],["Bell","Bell","Bell","Plum","Bar"],["Plum","Bar","Cherry","Bell","Cherry"]],"win":10,"wins":[{"line":"Line 1 (middle)","count":3,"symbol":"Bell","pay":10}],"cells":[[0,1],[1,1],[2,1]],"text":"Three Bells in a row on the middle line."},{"rows":[["Plum","Cherry","Bar","Bell","Plum"],["Bar","Seven","Plum","Cherry","Bell"],["Cherry","Bell","Seven","Bar","Cherry"]],"win":0,"wins":[],"cells":[],"text":"Nothing that matches."},{"rows":[["Plum","Bell","Bell","Seven","Plum"],["Cherry","Wild","Cherry","Bar","Bell"],["Bar","Plum","Seven","Plum","Seven"]],"win":10,"wins":[{"line":"Line 1 (middle)","count":3,"symbol":"Cherry","pay":10}],"cells":[[0,1],[1,1],[2,1]],"text":"Cherry, Wild, Cherry on the middle line. The Wild stands in for a Cherry."},{"rows":[["Cherry","Cherry","Cherry","Cherry","Cherry"],["Bar","Plum","Bell","Seven","Plum"],["Plum","Bell","Bar","Plum","Bar"]],"win":100,"wins":[{"line":"Line 2 (top)","count":5,"symbol":"Cherry","pay":100}],"cells":[[0,0],[1,0],[2,0],[3,0],[4,0]],"text":"Five Cherries on the top line. The “5 or more” payout row."},{"rows":[["Scatter","Bar","Plum","Scatter","Cherry"],["Cherry","Bell","Seven","Plum","Bar"],["Plum","Cherry","Scatter","Bar","Bell"]],"win":0,"wins":[],"cells":[],"text":"Three Scatters. Nothing pays; the Console reports the free-spins trigger."},{"rows":[["Cherry","Plum","Bar","Plum","Cherry"],["Seven","Seven","Cherry","Bar","Bell"],["Bar","Bell","Plum","Bell","Plum"]],"win":5,"wins":[{"line":"Line 1 (middle)","count":2,"symbol":"Seven","pay":5}],"cells":[[0,1],[1,1]],"text":"Two Sevens at the start of the middle line. A Seven already counts from 2."},{"rows":[["Bonus","Bell","Bonus","Cherry","Seven"],["Cherry","Bar","Seven","Bell","Bonus"],["Plum","Plum","Plum","Plum","Bar"]],"win":25,"wins":[{"line":"Line 3 (bottom)","count":4,"symbol":"Plum","pay":25}],"cells":[[0,2],[1,2],[2,2],[3,2]],"text":"Four Plums on the bottom line, and three Bonus symbols. The Console reports the bonus trigger."},{"rows":[["Bell","Plum","Bell","Cherry","Plum"],["Bell","Wild","Bell","Bar","Seven"],["Bell","Bar","Bell","Plum","Cherry"]],"win":30,"wins":[{"line":"Line 1 (middle)","count":3,"symbol":"Bell","pay":10},{"line":"Line 4 (V)","count":3,"symbol":"Bell","pay":10},{"line":"Line 5 (upside-down V)","count":3,"symbol":"Bell","pay":10}],"cells":[[0,0],[0,1],[0,2],[1,1],[2,0],[2,1],[2,2]],"text":"One Wild in the middle of Bells: three lines pay at once."}]}</script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
